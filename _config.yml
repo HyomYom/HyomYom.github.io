@@ -13,6 +13,7 @@ markdown: kramdown
 highlighter: rouge
 plugins: [jekyll-paginate]
 paginate: 5
+header: large
 
 navigation:
   - title: Home
@@ -23,11 +24,11 @@ navigation:
     url: /contact
 
 social:
-  github: brianmaierjr
-  twitter: brianmaierjr
-  facebook: brianmaierjr
-  email: brimaidesigns@gmail.com
-  linkedin: brianmaierjr
+  github: secret
+  twitter: secret
+  facebook: secret
+  email: secret
+  linkedin: secret
 
 google_analytics: "UA-58263416-1"
 
