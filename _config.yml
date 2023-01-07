@@ -1,8 +1,8 @@
-title: Long Haul
-description: Long Form Jekyll theme built with SASS / COMPASS / SUSY
+title: HyoYom
+description: 효맹이의 성장기
 
 url: http://brianmaierjr.github.com/long-haul
-baseurl: "/long-haul"
+baseurl: "https://hyomyom.github.io/"
 paginate_path: "blog/page:num/"
 permalink: blog/:title/
 
@@ -15,7 +15,7 @@ plugins: [jekyll-paginate]
 paginate: 5
 
 navigation:
-  - title: HyomYom
+  - title: Home
     url: /index.html
   - title: About
     url: /about
