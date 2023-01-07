@@ -1,8 +1,8 @@
 title: HyoYom
 description: 효맹이의 성장기
 
-url: http://brianmaierjr.github.com/long-haul
-baseurl: "https://hyomyom.github.io/"
+url: https://hyomyom.github.io
+baseurl: "https://hyomyom.github.io"
 paginate_path: "blog/page:num/"
 permalink: blog/:title/
 
