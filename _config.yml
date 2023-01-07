@@ -15,7 +15,7 @@ plugins: [jekyll-paginate]
 paginate: 5
 
 navigation:
-  - title: Home
+  - title: HyomYom
     url: /index.html
   - title: About
     url: /about
@@ -32,4 +32,4 @@ social:
 google_analytics: "UA-58263416-1"
 
 disqus:
-    shortname: brianmaierjr
+  shortname: brianmaierjr
