@@ -17,6 +17,8 @@ author: "Hyomyeong"
  예시 :
  - 특정 웹사이트 가입 시, 카카오 계정으로 로그인할 수 있다.
 
+ ---
+
  ### ✅2. 주요 용어
 | 용어                       | 설명                                   |
 | ------------------------ | ------------------------------------ |
@@ -24,3 +26,25 @@ author: "Hyomyeong"
 | **Client**               | 내 서비스를 사용하는 웹사이트 또는 앱                |
 | **Authorization Server** | 카카오 로그인 서버                           |
 | **Resource Server**      | 사용자의 리소스를 저장한 서버 (예: 카카오 프로필, 이메일 등) |
+
+---
+### ✅3. OAuth2 기본 흐름(Authorization Code Grant 기준)
+1. 사용자가 로그인 요청
+    - 사용자가 "카카오 로그인" 버튼 클릭
+2. 인증 요청 리다이렉트
+    - 사용자를 카카오 인증 서버 (https://kauth.kakao.com/oauth/authorize)로 리다이렉트
+3. Authorization Code 발급
+    - 사용자가 동의하면 카카오는 authorization code를 클라이언트에게 보냄 (콜백 URL)
+4. Access Tokken 요청
+    - 클라리언트는 받은 code를 이용해, 카카오에 access token을 요청
+5. Acess Token 발급
+    - 카카오는 access token을 발급함
+6. API 요청 (프로필 등)
+    - 클라이언트는 사용자의 정보(프로필, 닉네임, 이메일 등)를 카카오 API로부터 받아옴
+
+---
+### ✅4. 구현(Spring Boot)
+(기본적인 구성은 생략)
+```java
+
+```
