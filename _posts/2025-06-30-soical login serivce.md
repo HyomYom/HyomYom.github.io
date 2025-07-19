@@ -52,7 +52,7 @@ author: "Hyomyeong"
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 ```
-![의존성 주입][(/assets/img/oauth2-1-2025.jpg)]
+![의존성 주입](/assets/img/oauth2-1-2025.jpg)
 
 - 
 
