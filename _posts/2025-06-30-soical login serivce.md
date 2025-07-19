@@ -45,6 +45,11 @@ author: "Hyomyeong"
 ---
 ### ✅4. 구현(Spring Boot)
 (기본적인 구성은 생략)
-```java
 
+- 필수 라이브러리 추가(의존성 주입)
+    - Gradle - Spring Security, OAuth2
+```java
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 ```
+
