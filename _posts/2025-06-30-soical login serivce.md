@@ -28,7 +28,7 @@ author: "Hyomyeong"
 | **Resource Server**      | 사용자의 리소스를 저장한 서버 (예: 카카오 프로필, 이메일 등) |
 
 ---
-### ✅3. OAuth2 기본 흐름(Authorization Code Grant 기준)
+### ✅ 3. OAuth2 기본 흐름(Authorization Code Grant 기준)
 1. 사용자가 로그인 요청
     - 사용자가 "카카오 로그인" 버튼 클릭
 2. 인증 요청 리다이렉트
