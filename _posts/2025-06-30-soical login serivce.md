@@ -43,10 +43,16 @@ author: "Hyomyeong"
     - 클라이언트는 사용자의 정보(프로필, 닉네임, 이메일 등)를 카카오 API로부터 받아옴
 
 ---
-### ✅4. 구현(Spring Boot)
+### ✅4-1. 구현(카카오 개발자 콘솔 설정)
+![의존성 주입](/assets/img/oauth2-2-2025.jpg)
+카카오 developers(https://developers.kakao.com)에 접속해 로그인을하면 탭에서 앱이라는 항목에 접근을 할 수 있는데, 이곳에서 앱 생성을 통해 카카오톡 로그인을 구현하려는 서비스의 정보를 등록 및 설정해야 한다
+
+
+---
+### ✅4-2. 구현(Spring Boot)
 (기본적인 Spring Boot 구성은 생략)
 
-- OAuth@ 소셜 로그인에 필요한 필수 라이브러리 추가(의존성 주입)
+- OAuth@ 소셜 로그인에 필요한 필수 라이브러리 추가
     - build.gradle - Spring Security, OAuth2
 ```java
     implementation 'org.springframework.boot:spring-boot-starter-security'
