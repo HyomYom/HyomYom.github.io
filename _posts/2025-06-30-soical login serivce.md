@@ -59,7 +59,7 @@ author: "Hyomyeong"
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 ```
-<!-- ![의존성 주입](/assets/img/oauth2-1-2025.jpg) -->
+
 starter-oauth2-client는 로그인, 인증 흐름, 사용자 정보 요청, 리다이랙션 처리 등 클리언트 측 로직을 포함하고 있기 때문에 다음 기능을 수행하기 위해서는 꼭 추가해야 할 라이브러리이다.
 
 - 
