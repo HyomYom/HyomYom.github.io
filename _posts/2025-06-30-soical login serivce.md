@@ -44,17 +44,19 @@ author: "Hyomyeong"
 
 ---
 ## ✅4-1. 구현(카카오 개발자 콘솔 설정)
-![kakao dev 앱생성](/assets/img/oauth2-2-2025.jpg)
+![kakao dev 앱생성](/assets/img/oauth2-2-2025.jpeg)
 
 카카오 developers(https://developers.kakao.com)에 접속해 로그인을하면 탭에서 앱이라는 항목에 접근을 할 수 있는데, 이곳에서 앱 생성을 통해 카카오톡 로그인을 구현하려는 서비스의 정보를 등록 및 설정해야 한다
 
-![설정 목록](/assets/img/oauth2-3-2025.jpg)
+![설정 목록](/assets/img/oauth2-3-2025.jpeg)
 
 앱 생성 후 해당 앱을 클릭하면 대시보드로 이동하게 되는데, 로그인 서비스를 사용하기 위해 필수로 설정해야 하는 설정 목록을 보여준다.
 
 ### 1. 카카오로그인 설정
-![로그인 설정](/assets/img/oauth2-4-2025.jpg)
-로그인 설정을 활성해줘야 
+![로그인 설정](/assets/img/oauth2-4-2025.jpeg)
+가장 기본이 되는 설정으로, 활성화 해야지만 카카오 계쩡을 통해 OAuth2 인증을 진행할 수 있다.
+
+### 2. 
 
 
 
