@@ -68,9 +68,24 @@ author: "Hyomyeong"
 
 ---
 ## ✅4-2. 구현(Spring Boot)
-(기본적인 Spring Boot 구성은 생략)
+소셜 로그인을 구현 할 때 OAuth2-Client 또는 직접구현 방법이 있다.<br>
 
-- OAuth@ 소셜 로그인에 필요한 필수 라이브러리 추가
+로그인 및 권환 요청을 직접 구현할 경우
+
+1. 사용자 → 카카오 로그인 페이지로 리디렉션
+
+2. 인가 코드(code) 수신
+
+3. 서버에서 access token 요청
+
+4. access token으로 사용자 정보 요청
+
+5. 세션 또는 JWT 발급 → 로그인 완료 (서비스 구성에 따른 개별 설정)
+
+다음 과정을 거쳐야하는데, OAuth2-Client를 사용할 경우 다음 과정을 자동으로 처리해준다.
+
+
+- OAuth2 소셜 로그인에 필요한 필수 라이브러리 추가
     - build.gradle - Spring Security, OAuth2
 ```java
     implementation 'org.springframework.boot:spring-boot-starter-security'
