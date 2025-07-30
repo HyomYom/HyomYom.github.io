@@ -82,7 +82,7 @@ author: "Hyomyeong"
 
 5. 세션 또는 JWT 발급 → 로그인 완료 (서비스 구성에 따른 개별 설정)
 
-다음 과정을 거쳐야하는데, SpringSecurity, OAuth2-Client를 사용할 경우 다음 과정을 자동으로 처리해준다.
+다음 과정을 거쳐야하는데, SpringSecurity, OAuth2-Client를 사용할 경우 모든 절차를 자동으로 처리해준다.
 
 ### 1. 필수 라이브러리 추가
 - OAuth2 소셜 로그인에 필요한 필수 라이브러리 추가
@@ -94,5 +94,49 @@ author: "Hyomyeong"
 
 starter-oauth2-client는 로그인, 인증 흐름, 사용자 정보 요청, 리다이랙션 처리 등 클리언트 측 로직을 포함하고 있기 때문에 다음 기능을 수행하기 위해서는 꼭 추가해야 할 라이브러리이다.
 
-- 
+### 2. Application.yml 정
+```java
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: {REST_API_KEY}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, profile_image
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+```
+scope 값은 앞서 카카오 개발자 콘솔의 동의항목 설정에서 허용 했던 항목들을 입력해야한다
+설정 외 값을 입력하게 되면 오류가 발생하기 때문에 주의해야한다.
+provider 옵션은 앞서 설명한 것처럼, Spring Security는 등록 된 uri를 통해 AccessToken, UserInfo등을 자동으로 처리한다.
+
+### 3. Security 설정(SecurityConfig.java)
+SecurityFilterChain의 oauth2Login을 다음과 같이 구현한다
+```java
+                .oauth2Login(outh2 ->
+                            outh2
+                                    .loginPage("/login")
+                                    .userInfoEndpoint(user ->
+                                                user
+                                                        .userService(customOAuth2UserService)
+                                            )
+                                    .defaultSuccessUrl("/profile", true)
+                                    .failureHandler((request, response, exception) -> {
+                                        exception.printStackTrace(); // 콘솔에서 확인 가능
+                                        response.sendRedirect("/login?error");
+                                    })
+                        )
+```
+loginPage : oauth2 소셜 로그인을 진행할 경로 설정
+userInfoEndpoin : 로그인 후 Access Token과 UserInfo를 커스텀으로 처리 할 수 있는 class 경로 설정
+failureHandler : 소셜 로그인 실패 시 발생하는 예외 상황을 모니터링 및 확인 할 수 있는 설정
 
