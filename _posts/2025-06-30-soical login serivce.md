@@ -140,3 +140,76 @@ loginPage : oauth2 소셜 로그인을 진행할 경로 설정
 userInfoEndpoin : 로그인 후 Access Token과 UserInfo를 커스텀으로 처리 할 수 있는 class 경로 설정
 failureHandler : 소셜 로그인 실패 시 발생하는 예외 상황을 모니터링 및 확인 할 수 있는 설정
 
+
+### 4. OAuth2UserService 구현
+UserService를 통해 카카오에서 받아온 사용자 정보를 가공할 수 있다.
+카카오 API에서 내려주는 JSON 데이터 구조에 맞춰 닉네임, 프로필 이미지, 이메일 등을 추출 할 수 있다.
+
+```java
+@Getter
+@Builder
+@AllArgsConstructor
+public class OAuthAttributes {
+    private final Map<String, Object> attributes;
+    private final String provider;
+    private final String providerId;
+    private final String email;
+    private final String nickname;
+
+
+    public static OAuthAttributes of(String provider, Map<String, Object> attributes) {
+        switch (provider){
+            case "kakao" -> {return ofKaKao(attributes);}
+            default      -> throw new IllegalArgumentException("지원하지 않는 provider");
+
+        }
+    }
+
+    public static OAuthAttributes ofKaKao(Map<String, Object> attrs) {
+        String providerId = String.valueOf(attrs.get("id"));
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attrs.get("kakao_account");
+        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+
+        return OAuthAttributes.builder()
+                .provider("kakao")
+                .providerId(providerId)
+                .email((String) kakaoAccount.get("email"))
+                .nickname((String) profile.get("nickname"))
+                .attributes(attrs)
+                .build();
+
+    }
+}
+```
+추후 추가 될 소셜 로그인을 일관되게 처리 할 수 있도록 Attributes 클래스를 만들어 다음과 같이 처리를 유도했다.
+각 소셜 로그인이 제공하는 JSON 구조에 따라 메소드를 작성하면 된다.
+
+```java
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
+    private final MemberRepository memberRepository;
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("🔐 OAuth2 로그인 시도 중...");
+
+        DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        String provider = userRequest.getClientRegistration().getRegistrationId();
+
+
+        OAuthAttributes attr = OAuthAttributes.of(provider, oAuth2User.getAttributes());
+
+
+        Member member  = memberRepository.findByProviderAndProviderId(provider, attr.getProviderId())
+                .map(m -> {m.update(attr); return m;})
+                .orElseGet(() -> memberRepository.save(Member.of(attr)));
+
+        return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_"+member.getRole())), attr.getAttributes(), "id");
+    }
+}
+```
+
