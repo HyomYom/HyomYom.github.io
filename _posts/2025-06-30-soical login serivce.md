@@ -44,25 +44,25 @@ author: "Hyomyeong"
 
 ---
 ## ✅4-1. 구현(카카오 개발자 콘솔 설정)
-![kakao dev 앱생성](/assets/img/oauth2-2-2025.jpeg)
+![kakao dev 앱생성]({{ '/assets/img/oauth2-2-2025.jpg' | relative_url }})
 
 카카오 developers(https://developers.kakao.com)에 접속해 로그인을하면 탭에서 앱이라는 항목에 접근을 할 수 있는데, 이곳에서 앱 생성을 통해 카카오톡 로그인을 구현하려는 서비스의 정보를 등록 및 설정해야 한다
 
-![설정 목록](/assets/img/oauth2-3-2025.jpeg)
+![설정 목록]({{ '/assets/img/oauth2-3-2025.jpg' | relative_url }})
 
 앱 생성 후 해당 앱을 클릭하면 대시보드로 이동하게 되는데, 로그인 서비스를 사용하기 위해 필수로 설정해야 하는 설정 목록을 보여준다.
 
 ### 1. 카카오로그인 설정
-![로그인 설정](/assets/img/oauth2-4-2025.jpeg)
+![로그인 설정]({{ '/assets/img/oauth2-4-2025.jpg' | relative_url }})
 가장 기본이 되는 설정으로, 활성화 해야지만 카카오 계정을 통해 OAuth2 인증을 진행할 수 있다.
 
 ### 2. Redirect Url 설정 
-![Redirect 설정](/assets/img/oauth2-5-2025.jpeg)
+![Redirect 설정]({{ '/assets/img/oauth2-5-2025.jpg' | relative_url }})
 다음은 카카로 로그인에 사용할 리다이렉트 URI설정이다.<br>
 카카오 로그인 후 인가코드를 얻을 수 있는데, 등록된 해당 주소로 다음 코드를 전달하기 때문에 필수로 지정해야하는 설정이다.
 
 ### 3. 동의항목 설정
-![동의항목 설정](/assets/img/oauth2-6-2025.jpeg)
+![동의항목 설정]({{ '/assets/img/oauth2-6-2025.jpg' | relative_url }})
 카카오 로그인 시 사용자에게 어떤 정보(예: 이메일, 닉네임, 프로필 사진 등)를 요청할지 설정하는 부분이다.<br>
 설정한 항목에 따라 로그인 시 카카오가 사용자에게 동의를 요청하게 되며, 추후 yml 설정파일과 연관되기 때문에 주의하여 설정하여야한다.
 
