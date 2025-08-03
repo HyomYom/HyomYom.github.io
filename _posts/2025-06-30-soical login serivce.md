@@ -56,7 +56,7 @@ author: "Hyomyeong"
 ![로그인 설정](/assets/img/oauth2-4-2025.jpeg)
 가장 기본이 되는 설정으로, 활성화 해야지만 카카오 계정을 통해 OAuth2 인증을 진행할 수 있다.
 
-### 2. Redirect Url 설정
+### 2. Redirect Url 설정 
 ![Redirect 설정](/assets/img/oauth2-5-2025.jpeg)
 다음은 카카로 로그인에 사용할 리다이렉트 URI설정이다.<br>
 카카오 로그인 후 인가코드를 얻을 수 있는데, 등록된 해당 주소로 다음 코드를 전달하기 때문에 필수로 지정해야하는 설정이다.
