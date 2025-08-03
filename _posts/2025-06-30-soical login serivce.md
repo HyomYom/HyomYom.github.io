@@ -219,5 +219,5 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 ## ✅5. Test & 주의사항
 - scope 값은 반드시 카카오 개발자 콘솔에서 허용한 항목과 동일해야 함.
 
-- redirect-uri는 로컬 테스트 시 http://localhost:8080/login/oauth2/code/kakao 형식이어야 함.
+- redirect-uri는 로컬 테스트 시 http://{사용자등록url}/login/oauth2/code/kakao 형식이어야 함.
 
