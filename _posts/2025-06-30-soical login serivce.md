@@ -44,7 +44,7 @@ author: "Hyomyeong"
 
 ---
 ## ✅4-1. 구현(카카오 개발자 콘솔 설정)
-![kakao dev 앱생성](/assets/img/oauth2-2-2025.jpeg)
+![kakao dev 앱생성](assets/img/oauth2-2-2025.jpeg)
 
 카카오 developers(https://developers.kakao.com)에 접속해 로그인을하면 탭에서 앱이라는 항목에 접근을 할 수 있는데, 이곳에서 앱 생성을 통해 카카오톡 로그인을 구현하려는 서비스의 정보를 등록 및 설정해야 한다
 
