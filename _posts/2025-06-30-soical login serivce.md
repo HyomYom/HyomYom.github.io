@@ -212,4 +212,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 }
 ```
+카카오 API에서 제공하는 유저 정보를 추출하여 Member Table에 유저정보를 저장하는 로직과, 저장 후 유저 정보 및 권한을 담아 SecurityContext에 설정하는 부분까지 작성해보았다.
+이후 로그인 구성에 따라 JWT Token 발급 등의 로직을 원한다면 이를 기반으로 확장하여 개발할 수 있다.
+
+---
+## ✅5. Test & 주의사항
+- scope 값은 반드시 카카오 개발자 콘솔에서 허용한 항목과 동일해야 함.
+
+- redirect-uri는 로컬 테스트 시 http://localhost:8080/login/oauth2/code/kakao 형식이어야 함.
 
