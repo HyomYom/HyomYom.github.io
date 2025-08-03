@@ -59,6 +59,21 @@
         "kind": "build"
       },
       "detail": "Runs both the Jekyll server with live reload and build JS files in watch mode."
+    },{
+      "label": "Watch _posts",
+      "type": "shell",
+      "command": "npm run watch:_posts",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
     }
   ]
 }
