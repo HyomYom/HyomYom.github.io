@@ -1,8 +1,8 @@
 ---
 layout: post
 title: "OAuth2 로그인 구현 [Kakao]"
-categories: [SpringBoot, API, OAuth2, Kakao]
-tags: [Blog, Oauth2, Social-login]
+categories: [API, Social-login]
+tags: [Blog, Oauth2, Social-login, Kakao]
 author: "Hyomyeong"
 ---
  해당글은 공부 목적으로 정리한 개인적인 기록입니다.
