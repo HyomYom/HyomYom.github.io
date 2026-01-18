@@ -7,6 +7,8 @@ tags: ['Convention']
 last_modified_at: 2026-01-18
 ---
 
+
+
 > Commit message는“이 커밋이 무엇을 하는지”를 명령문으로 설명한다
 
 
