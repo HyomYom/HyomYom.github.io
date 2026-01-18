@@ -3,27 +3,37 @@ layout: post
 title: "🧾 Git Commit Convention"
 date: 2026-01-17
 categories: [git]
+tags: ['Convention']
+last_modified_at: 2026-01-18
 ---
+
+> Commit message는“이 커밋이 무엇을 하는지”를 명령문으로 설명한다
+
+
+---
+
 ## 1️⃣ 기본 형식 (⭐ 가장 중요)
 
-```plain text
+```text
 <type>(optional scope): <subject>
 
 ```
 
 ### ✅ 예시
 
-```plain text
+```text
 feat(auth): add JWT authentication
 fix(user): resolve null pointer exception
 
 ```
+
 
 ---
 
 ## 2️⃣ Type 종류 (필수)
 
 > 👉 실무에서 가장 중요한 건 feat / fix
+
 
 ---
 
@@ -33,12 +43,13 @@ fix(user): resolve null pointer exception
 - 소문자, 한 단어 권장
 ### 예시
 
-```plain text
+```text
 feat(auth)
 fix(security)
 refactor(user)
 
 ```
+
 
 ---
 
@@ -52,7 +63,7 @@ refactor(user)
 - 50자 이내
 ### ✅ 좋은 예
 
-```plain text
+```text
 feat: add login API
 fix: handle expired token
 
@@ -60,12 +71,13 @@ fix: handle expired token
 
 ### ❌ 나쁜 예
 
-```plain text
+```text
 Added login feature ❌
 Fixing bug ❌
 로그인 기능 추가 ❌
 
 ```
+
 
 ---
 
@@ -75,7 +87,7 @@ Fixing bug ❌
 - Subject 아래 한 줄 띄우고 작성
 ### 예시
 
-```plain text
+```text
 feat(auth): add JWT authentication
 
 - issue token on login
@@ -84,15 +96,17 @@ feat(auth): add JWT authentication
 
 ```
 
+
 ---
 
 ## 6️⃣ Footer (선택)
 
 - 이슈 트래킹, PR 연동용
-```plain text
+```text
 Closes #23
 
 ```
+
 
 ---
 
@@ -100,7 +114,7 @@ Closes #23
 
 ### 🔐 Security / Auth
 
-```plain text
+```text
 feat(security): add role-based authorization
 
 - apply ROLE_USER and ROLE_ADMIN
@@ -108,15 +122,16 @@ feat(security): add role-based authorization
 
 ```
 
-```plain text
+```text
 fix(jwt): handle expired token exception
 
 ```
 
-```plain text
+```text
 refactor(auth): simplify authentication filter
 
 ```
+
 
 ---
 
@@ -126,18 +141,19 @@ refactor(auth): simplify authentication filter
 
 - ❌ 무엇을 했다
 - ✅ 무엇을 하라
-```plain text
+```text
 add login API
 fix token validation
 remove unused config
 
 ```
 
+
 ---
 
 ## 9️⃣ Spring + Security + JWT 프로젝트 추천 Scope
 
-```plain text
+```text
 feat(auth)
 feat(security)
 fix(jwt)
@@ -146,9 +162,11 @@ chore(config)
 
 ```
 
+
 ---
 
 ## ✅ 보너스: 커밋 전 체크리스트
+
 
 ---
 
