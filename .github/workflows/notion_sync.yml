@@ -34,4 +34,7 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git config --global user.name "GitHub Actions"
         git add _posts/
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Sync from Notion" && git push)
+        if ! git diff --cached --quiet; then
+          git commit -m "chore: sync posts from Notion"
+          git push
+        fi
