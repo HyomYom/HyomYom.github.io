@@ -44,19 +44,38 @@ def get_pages(database_id):
         print(f"❌ Error: {str(e)}")
         return []
 
-def update_page_status(page_id, status):
+def update_page_status(page_id, status, properties):
     """페이지의 Published 상태를 업데이트"""
     url = f"https://api.notion.com/v1/pages/{page_id}"
     
-    payload = {
-        "properties": {
-            "Published": {
-                "select": {
-                    "name": status
+    # Published 속성의 타입 확인
+    published_prop = properties.get('Published', {})
+    prop_type = published_prop.get('type', '')
+    
+    # 타입에 따라 다른 payload 사용
+    if prop_type == 'status':
+        payload = {
+            "properties": {
+                "Published": {
+                    "status": {
+                        "name": status
+                    }
                 }
             }
         }
-    }
+    elif prop_type == 'select':
+        payload = {
+            "properties": {
+                "Published": {
+                    "select": {
+                        "name": status
+                    }
+                }
+            }
+        }
+    else:
+        print(f"   ⚠️  Unknown Published property type: {prop_type}")
+        return False
     
     try:
         response = requests.patch(url, headers=headers, json=payload)
@@ -121,7 +140,39 @@ def notion_block_to_markdown(block):
         
         elif block_type == 'code':
             text = ''.join([t['plain_text'] for t in block['code']['rich_text']])
-            language = block['code'].get('language', '')
+            language = block['code'].get('language', 'text')
+            
+            # Notion 언어명을 Jekyll 호환 언어명으로 변환
+            language_map = {
+                'plain text': 'text',
+                'Plain Text': 'text',
+                'javascript': 'javascript',
+                'python': 'python',
+                'java': 'java',
+                'bash': 'bash',
+                'shell': 'bash',
+                'json': 'json',
+                'yaml': 'yaml',
+                'yml': 'yaml',
+                'markdown': 'markdown',
+                'html': 'html',
+                'css': 'css',
+                'sql': 'sql',
+                'typescript': 'typescript',
+                'c++': 'cpp',
+                'c#': 'csharp',
+                'go': 'go',
+                'rust': 'rust',
+                'ruby': 'ruby',
+                'php': 'php',
+                'swift': 'swift',
+                'kotlin': 'kotlin',
+            }
+            
+            # 언어명 정리 (소문자 변환 후 매핑, 공백은 하이픈으로)
+            language_lower = language.lower()
+            language = language_map.get(language_lower, language_lower.replace(' ', '-'))
+            
             return f"```{language}\n{text}\n```\n\n"
         
         elif block_type == 'quote':
@@ -137,11 +188,22 @@ def notion_block_to_markdown(block):
             return f"![{caption}]({url})\n\n"
         
         elif block_type == 'divider':
-            return "---\n\n"
+            return "\n---\n\n"
         
         elif block_type == 'callout':
+            # Callout의 아이콘과 텍스트 처리
+            icon = block['callout'].get('icon', {})
+            icon_text = ''
+            if icon.get('type') == 'emoji':
+                icon_text = icon.get('emoji', '💡')
+            
             text = ''.join([t['plain_text'] for t in block['callout']['rich_text']])
-            return f"> 💡 {text}\n\n"
+            return f"> {icon_text} {text}\n\n"
+        
+        elif block_type == 'toggle':
+            # Toggle (접기/펼치기)
+            text = ''.join([t['plain_text'] for t in block['toggle']['rich_text']])
+            return f"<details>\n<summary>{text}</summary>\n\n</details>\n\n"
     
     except Exception as e:
         print(f"⚠️  Error converting block type '{block_type}': {str(e)}")
@@ -172,13 +234,13 @@ def get_published_status(properties):
     """Published 상태 가져오기"""
     published_prop = properties.get('Published', {})
     
+    # Status 타입 (우선순위)
+    if 'status' in published_prop and published_prop['status']:
+        return published_prop['status'].get('name', '')
+    
     # Select 타입
     if 'select' in published_prop and published_prop['select']:
         return published_prop['select'].get('name', '')
-    
-    # Status 타입
-    if 'status' in published_prop and published_prop['status']:
-        return published_prop['status'].get('name', '')
     
     return ''
 
@@ -231,6 +293,10 @@ def create_jekyll_post(page, update_mode=False):
         blocks = get_blocks(page['id'])
         content = ''.join([notion_block_to_markdown(block) for block in blocks])
         
+        # 본문이 비어있으면 기본 내용 추가
+        if not content.strip():
+            content = "내용을 입력하세요.\n\n"
+        
         # Jekyll Front Matter 생성
         front_matter_lines = [
             "---",
@@ -253,17 +319,23 @@ def create_jekyll_post(page, update_mode=False):
             front_matter_lines.append(f"last_modified_at: {datetime.now().strftime('%Y-%m-%d')}")
         
         front_matter_lines.append("---")
-        front_matter = '\n'.join(front_matter_lines) + '\n\n'
+        
+        # Front Matter와 본문 사이에 빈 줄 2개 확실히 넣기
+        full_content = '\n'.join(front_matter_lines) + '\n\n' + content
         
         # 파일명 생성
         safe_title = title.lower().replace(' ', '-').replace('/', '-')
+        # 이모지 및 특수문자 제거
         safe_title = ''.join(c for c in safe_title if c.isalnum() or c == '-')
+        # 연속된 하이픈 제거
+        safe_title = '-'.join(filter(None, safe_title.split('-')))
+        
         filename = f"{date_str}-{safe_title}.md"
         filepath = os.path.join(POSTS_DIR, filename)
         
         # 파일 저장
         with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(front_matter + content)
+            f.write(full_content)
         
         return filename
     
@@ -313,8 +385,8 @@ if __name__ == '__main__':
                 if result:
                     stats['created'] += 1
                     print(f"   ✅ Created: {result}")
-                    # 상태를 Done으로 변경
-                    if update_page_status(page_id, 'Done'):
+                    # 상태를 Done으로 변경 (properties 전달)
+                    if update_page_status(page_id, 'Done', properties):
                         stats['status_updated'] += 1
                     print()
             
@@ -325,8 +397,8 @@ if __name__ == '__main__':
                 if result:
                     stats['updated'] += 1
                     print(f"   ✅ Updated: {result}")
-                    # 상태를 Done으로 변경
-                    if update_page_status(page_id, 'Done'):
+                    # 상태를 Done으로 변경 (properties 전달)
+                    if update_page_status(page_id, 'Done', properties):
                         stats['status_updated'] += 1
                     print()
             
