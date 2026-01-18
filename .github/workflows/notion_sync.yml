@@ -1,28 +1,50 @@
-name: Notion to Blog Sync
+name: Sync Notion to Jekyll
 
 on:
-  workflow_dispatch: # 직접 실행 버튼을 만듭니다
+  schedule:
+    - cron: '0 */6 * * *'  # 6시간마다 실행
+  workflow_dispatch:  # 수동 실행 가능
 
 jobs:
-  build:
+  sync:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-      - name: Install dependencies
-        run: pip install requests
-      - name: Run Sync Script
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: python notion_sync.py
-      - name: Commit and Push
-        run: |
-          git config --global user.name "Github-Actions-Bot"
-          git config --global user.email "actions@github.com"
-          git add .
-          git commit -m "Notion sync: Before to Done" || echo "No changes"
-          git push
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests
+    
+    - name: Run sync script
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        DATABASE_IDS: ${{ secrets.DATABASE_IDS }}
+      run: |
+        python notion_to_jekyll.py
+    
+    - name: Commit and push if changed
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git add _posts/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Sync from Notion" && git push)
+```
+
+**GitHub Secrets 설정:**
+
+1. `NOTION_TOKEN`: 기존과 동일
+2. `DATABASE_IDS`: 여러 개를 쉼표로 구분
+```
+   abc123def456,xyz789ghi012,mno345pqr678
+```
+
+**예시:**
+```
+DATABASE_IDS=1234567890abcdef1234567890abcdef,abcdef1234567890abcdef1234567890
