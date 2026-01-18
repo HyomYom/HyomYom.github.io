@@ -35,16 +35,3 @@ jobs:
         git config --global user.name "GitHub Actions"
         git add _posts/
         git diff --quiet && git diff --staged --quiet || (git commit -m "Sync from Notion" && git push)
-```
-
-**GitHub Secrets 설정:**
-
-1. `NOTION_TOKEN`: 기존과 동일
-2. `DATABASE_IDS`: 여러 개를 쉼표로 구분
-```
-   abc123def456,xyz789ghi012,mno345pqr678
-```
-
-**예시:**
-```
-DATABASE_IDS=1234567890abcdef1234567890abcdef,abcdef1234567890abcdef1234567890
