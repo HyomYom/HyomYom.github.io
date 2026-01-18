@@ -1,0 +1,28 @@
+name: Notion to Blog Sync
+
+on:
+  workflow_dispatch: # 직접 실행 버튼을 만듭니다
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Sync Script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: python notion_sync.py
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Github-Actions-Bot"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Notion sync: Before to Done" || echo "No changes"
+          git push
