@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
-DATABASE_IDS = os.environ['DATABASE_IDS'].split(',')
+DATABASE_IDS = [db_id.strip().replace('-', '') for db_id in os.environ['DATABASE_IDS'].split(',')]
 POSTS_DIR = '_posts'
 
 headers = {
@@ -30,18 +30,16 @@ def get_pages(database_id):
     
     try:
         response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()  # HTTP 에러 체크
+        response.raise_for_status()
         
         data = response.json()
         
-        # 에러 응답 체크
         if 'object' in data and data['object'] == 'error':
             print(f"❌ Notion API Error: {data.get('message', 'Unknown error')}")
             return []
         
-        # results 키 확인
         if 'results' not in data:
-            print(f"⚠️  Unexpected response format: {json.dumps(data, indent=2)}")
+            print(f"⚠️  Unexpected response format")
             return []
         
         return data['results']
@@ -63,7 +61,6 @@ def get_blocks(page_id):
         data = response.json()
         
         if 'results' not in data:
-            print(f"⚠️  No blocks found for page {page_id}")
             return []
         
         return data['results']
@@ -123,14 +120,36 @@ def notion_block_to_markdown(block):
     
     return ''
 
+def get_title_from_properties(properties):
+    """Title 또는 Name 속성에서 제목 추출"""
+    # Title 속성 먼저 확인
+    if 'Title' in properties:
+        title_prop = properties['Title'].get('title', [])
+        if title_prop:
+            return title_prop[0]['plain_text']
+    
+    # Name 속성 확인
+    if 'Name' in properties:
+        name_prop = properties['Name'].get('title', [])
+        if name_prop:
+            return name_prop[0]['plain_text']
+    
+    # 둘 다 없으면 모든 title 타입 속성 검색
+    for prop_name, prop_data in properties.items():
+        if prop_data.get('type') == 'title':
+            title_list = prop_data.get('title', [])
+            if title_list:
+                return title_list[0]['plain_text']
+    
+    return 'Untitled'
+
 def create_jekyll_post(page):
     """Notion 페이지를 Jekyll 포스트로 변환"""
     try:
         properties = page['properties']
         
-        # Title
-        title_prop = properties.get('Title', {}).get('title', [])
-        title = title_prop[0]['plain_text'] if title_prop else 'Untitled'
+        # Title 또는 Name에서 제목 가져오기
+        title = get_title_from_properties(properties)
         
         # Date
         date_prop = properties.get('Date', {}).get('date')
@@ -191,6 +210,8 @@ def create_jekyll_post(page):
     
     except Exception as e:
         print(f"❌ Error creating post: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return None
 
 if __name__ == '__main__':
@@ -201,9 +222,9 @@ if __name__ == '__main__':
     
     # 각 데이터베이스에서 페이지 가져오기
     for idx, database_id in enumerate(DATABASE_IDS, 1):
-        database_id = database_id.strip()
-        print(f"\n📚 Database {idx}/{len(DATABASE_IDS)}")
-        print(f"🔄 Fetching pages from: {database_id[:8]}...{database_id[-4:]}")
+        print(f"\n{'='*60}")
+        print(f"📚 Database {idx}/{len(DATABASE_IDS)}: {database_id[:8]}...{database_id[-4:]}")
+        print(f"{'='*60}")
         
         pages = get_pages(database_id)
         
@@ -217,4 +238,6 @@ if __name__ == '__main__':
         for page in pages:
             create_jekyll_post(page)
     
-    print(f"\n✨ Sync completed! Total: {total_pages} pages processed")
+    print(f"\n{'='*60}")
+    print(f"✨ Sync completed! Total: {total_pages} pages processed")
+    print(f"{'='*60}")
