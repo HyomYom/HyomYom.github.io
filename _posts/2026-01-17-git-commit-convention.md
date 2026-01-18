@@ -8,8 +8,9 @@ last_modified_at: 2026-01-18
 ---
 
 
+# ✍️ Commit Message 정리
 
-> Commit message는“이 커밋이 무엇을 하는지”를 명령문으로 설명한다
+> Commit message는
 
 
 ---
@@ -17,32 +18,35 @@ last_modified_at: 2026-01-18
 ## 1️⃣ 기본 형식 (⭐ 가장 중요)
 
 ```text
-<type>(optional scope): <subject>
+<type>(optional scope):<subject>
+
+✅ 예시
+feat(auth):add JWT authentication
+fix(user): resolvenull pointerexception
+
 
 ```
 
-### ✅ 예시
-
-```text
-feat(auth): add JWT authentication
-fix(user): resolve null pointer exception
-
-```
+> 이 형식만 잘 지켜도 커밋 메시지는 절반은 성공이다.
 
 
 ---
 
 ## 2️⃣ Type 종류 (필수)
 
-> 👉 실무에서 가장 중요한 건 feat / fix
+Type은 이 커밋이 어떤 성격인지를 나타낸다.
+
+> 👉 실무에서는 feat / fix가 가장 많이 쓰인다.
 
 
 ---
 
 ## 3️⃣ Scope (선택)
 
-- 변경된 도메인 / 모듈 / 패키지
-- 소문자, 한 단어 권장
+Scope는 어디를 수정했는지를 보여준다.
+
+- 도메인 / 모듈 / 패키지 단위
+- 보통 소문자 + 한 단어로 작성
 ### 예시
 
 ```text
@@ -50,7 +54,10 @@ feat(auth)
 fix(security)
 refactor(user)
 
+
 ```
+
+> 필수는 아니지만, 있으면 커밋 히스토리 보기가 훨씬 좋다.
 
 
 ---
@@ -69,6 +76,7 @@ refactor(user)
 feat: add login API
 fix: handle expired token
 
+
 ```
 
 ### ❌ 나쁜 예
@@ -80,32 +88,41 @@ Fixing bug ❌
 
 ```
 
+> ❗ 한국어 ❌ / 과거형 ❌
+
 
 ---
 
 ## 5️⃣ Body (선택)
 
-- 왜(Why) 와 어떻게(How) 를 설명
-- Subject 아래 한 줄 띄우고 작성
+Subject에서 다 설명이 안 될 때 사용한다.
+
+- 왜(Why) 이 작업을 했는지
+- 어떻게(How) 구현했는지
+Subject 아래 한 줄 띄우고 작성한다.
+
 ### 예시
 
 ```text
-feat(auth): add JWT authentication
+feat(auth):add JWT authentication
 
-- issue token on login
-- validate token on request
+- issue tokenonlogin
+-validate tokenon request
 - handle expiration
 
 ```
+
+> 팀원이 커밋만 봐도 흐름을 이해할 수 있게 쓰는 게 목표
 
 
 ---
 
 ## 6️⃣ Footer (선택)
 
-- 이슈 트래킹, PR 연동용
+이슈나 PR과 연결할 때 사용한다.
+
 ```text
-Closes #23
+Closes#23
 
 ```
 
@@ -114,13 +131,13 @@ Closes #23
 
 ## 7️⃣ 실무에서 자주 쓰는 예시
 
-### 🔐 Security / Auth
+### 🔐 Security / Auth 관련
 
 ```text
-feat(security): add role-based authorization
+feat(security):addrole-basedauthorization
 
-- apply ROLE_USER and ROLE_ADMIN
-- restrict admin endpoints
+- apply ROLE_USERand ROLE_ADMIN
+-restrictadmin endpoints
 
 ```
 
@@ -137,7 +154,7 @@ refactor(auth): simplify authentication filter
 
 ---
 
-## 8️⃣ 커밋 한 줄 요약 규칙
+## 8️⃣ 커밋 메시지 한 줄 요약 규칙
 
 > 💡 Commit message = 명령문
 
@@ -150,10 +167,12 @@ remove unused config
 
 ```
 
+> 커밋 메시지를 보면
+
 
 ---
 
-## 9️⃣ Spring + Security + JWT 프로젝트 추천 Scope
+## 9️⃣ Spring + Security + JWT 프로젝트에서 자주 쓰는 Scope
 
 ```text
 feat(auth)
@@ -166,13 +185,4 @@ chore(config)
 
 
 ---
-
-## ✅ 보너스: 커밋 전 체크리스트
-
-
----
-
-
-
-
 
