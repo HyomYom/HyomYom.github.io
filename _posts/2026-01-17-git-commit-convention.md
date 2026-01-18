@@ -4,11 +4,6 @@ title: "🧾 Git Commit Convention"
 date: 2026-01-17
 categories: [git]
 ---
-
-> Commit message는“이 커밋이 무엇을 하는지”를 명령문으로 설명한다
-
----
-
 ## 1️⃣ 기본 형식 (⭐ 가장 중요)
 
 ```plain text
