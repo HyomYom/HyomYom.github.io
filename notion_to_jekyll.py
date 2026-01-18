@@ -2,7 +2,7 @@
 import os
 import requests
 from datetime import datetime
-import json
+import glob
 
 NOTION_TOKEN = os.environ['NOTION_TOKEN']
 DATABASE_IDS = [db_id.strip().replace('-', '') for db_id in os.environ['DATABASE_IDS'].split(',')]
@@ -18,12 +18,11 @@ def get_pages(database_id):
     """특정 데이터베이스에서 페이지 가져오기"""
     url = f"https://api.notion.com/v1/databases/{database_id}/query"
     
-    # ⚠️ 테스트용: 필터 제거 - 모든 페이지 가져오기
+    # 모든 페이지 가져오기 (필터 없음)
     payload = {}
     
     try:
         response = requests.post(url, headers=headers, json=payload)
-        print(f"📡 Response Status: {response.status_code}")
         
         if response.status_code != 200:
             print(f"❌ Response: {response.text}")
@@ -41,12 +40,37 @@ def get_pages(database_id):
         
         return data['results']
     
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Request failed: {str(e)}")
-        return []
     except Exception as e:
-        print(f"❌ Unexpected error: {str(e)}")
+        print(f"❌ Error: {str(e)}")
         return []
+
+def update_page_status(page_id, status):
+    """페이지의 Published 상태를 업데이트"""
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    
+    payload = {
+        "properties": {
+            "Published": {
+                "select": {
+                    "name": status
+                }
+            }
+        }
+    }
+    
+    try:
+        response = requests.patch(url, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            print(f"   ✅ Status updated to: {status}")
+            return True
+        else:
+            print(f"   ⚠️  Failed to update status: {response.text}")
+            return False
+    
+    except Exception as e:
+        print(f"   ⚠️  Error updating status: {str(e)}")
+        return False
 
 def get_blocks(page_id):
     """페이지의 블록(내용) 가져오기"""
@@ -111,6 +135,13 @@ def notion_block_to_markdown(block):
                 url = block['image']['file']['url']
             caption = ''.join([t['plain_text'] for t in block['image'].get('caption', [])])
             return f"![{caption}]({url})\n\n"
+        
+        elif block_type == 'divider':
+            return "---\n\n"
+        
+        elif block_type == 'callout':
+            text = ''.join([t['plain_text'] for t in block['callout']['rich_text']])
+            return f"> 💡 {text}\n\n"
     
     except Exception as e:
         print(f"⚠️  Error converting block type '{block_type}': {str(e)}")
@@ -137,40 +168,42 @@ def get_title_from_properties(properties):
     
     return 'Untitled'
 
-def should_publish(properties):
-    """페이지를 발행해야 하는지 확인"""
-    # Published 속성 확인
+def get_published_status(properties):
+    """Published 상태 가져오기"""
     published_prop = properties.get('Published', {})
     
     # Select 타입
-    if 'select' in published_prop:
-        status = published_prop['select']
-        if status and status.get('name') == 'Published':
-            return True
-    
-    # Checkbox 타입
-    if 'checkbox' in published_prop:
-        if published_prop['checkbox']:
-            return True
+    if 'select' in published_prop and published_prop['select']:
+        return published_prop['select'].get('name', '')
     
     # Status 타입
-    if 'status' in published_prop:
-        status = published_prop['status']
-        if status and status.get('name') == 'Published':
-            return True
+    if 'status' in published_prop and published_prop['status']:
+        return published_prop['status'].get('name', '')
     
-    return False
+    return ''
 
-def create_jekyll_post(page):
+def find_existing_post(title, date_str):
+    """기존 포스트 파일 찾기"""
+    safe_title = title.lower().replace(' ', '-').replace('/', '-')
+    safe_title = ''.join(c for c in safe_title if c.isalnum() or c == '-')
+    
+    # 정확한 파일명으로 찾기
+    exact_file = os.path.join(POSTS_DIR, f"{date_str}-{safe_title}.md")
+    if os.path.exists(exact_file):
+        return exact_file
+    
+    # 제목으로 검색 (날짜가 다를 수 있음)
+    pattern = os.path.join(POSTS_DIR, f"*-{safe_title}.md")
+    matches = glob.glob(pattern)
+    if matches:
+        return matches[0]
+    
+    return None
+
+def create_jekyll_post(page, update_mode=False):
     """Notion 페이지를 Jekyll 포스트로 변환"""
     try:
         properties = page['properties']
-        
-        # Published 체크
-        if not should_publish(properties):
-            title = get_title_from_properties(properties)
-            print(f"⏭️  Skipped (not published): {title}")
-            return None
         
         title = get_title_from_properties(properties)
         
@@ -215,6 +248,10 @@ def create_jekyll_post(page):
         if tags:
             front_matter_lines.append(f"tags: {tags}")
         
+        # 업데이트 모드면 last_modified 추가
+        if update_mode:
+            front_matter_lines.append(f"last_modified_at: {datetime.now().strftime('%Y-%m-%d')}")
+        
         front_matter_lines.append("---")
         front_matter = '\n'.join(front_matter_lines) + '\n\n'
         
@@ -228,7 +265,6 @@ def create_jekyll_post(page):
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(front_matter + content)
         
-        print(f"✅ Created: {filename}")
         return filename
     
     except Exception as e:
@@ -241,8 +277,13 @@ if __name__ == '__main__':
     if not os.path.exists(POSTS_DIR):
         os.makedirs(POSTS_DIR)
     
-    total_pages = 0
-    published_count = 0
+    stats = {
+        'total': 0,
+        'created': 0,
+        'updated': 0,
+        'skipped': 0,
+        'status_updated': 0
+    }
     
     for idx, database_id in enumerate(DATABASE_IDS, 1):
         print(f"\n{'='*60}")
@@ -255,16 +296,60 @@ if __name__ == '__main__':
             print(f"⚠️  No pages found in this database")
             continue
         
-        print(f"📝 Found {len(pages)} total pages")
-        total_pages += len(pages)
+        print(f"📝 Found {len(pages)} total pages\n")
+        stats['total'] += len(pages)
         
         for page in pages:
-            result = create_jekyll_post(page)
-            if result:
-                published_count += 1
+            page_id = page['id']
+            properties = page['properties']
+            title = get_title_from_properties(properties)
+            status = get_published_status(properties)
+            
+            # 상태별 처리
+            if status == 'Before':
+                # 새로 포스팅
+                print(f"🆕 Creating: {title}")
+                result = create_jekyll_post(page, update_mode=False)
+                if result:
+                    stats['created'] += 1
+                    print(f"   ✅ Created: {result}")
+                    # 상태를 Done으로 변경
+                    if update_page_status(page_id, 'Done'):
+                        stats['status_updated'] += 1
+                    print()
+            
+            elif status == 'Need update':
+                # 기존 포스트 업데이트
+                print(f"🔄 Updating: {title}")
+                result = create_jekyll_post(page, update_mode=True)
+                if result:
+                    stats['updated'] += 1
+                    print(f"   ✅ Updated: {result}")
+                    # 상태를 Done으로 변경
+                    if update_page_status(page_id, 'Done'):
+                        stats['status_updated'] += 1
+                    print()
+            
+            elif status == 'Done':
+                # 이미 완료된 것, 건드리지 않음
+                print(f"✔️  Already published: {title}")
+                stats['skipped'] += 1
+            
+            elif status == 'In progress':
+                # 작업 중, 건드리지 않음
+                print(f"⏳ In progress (skipped): {title}")
+                stats['skipped'] += 1
+            
+            else:
+                # 상태가 없거나 알 수 없는 상태
+                print(f"❓ Unknown status '{status}': {title} (skipped)")
+                stats['skipped'] += 1
     
     print(f"\n{'='*60}")
     print(f"✨ Sync completed!")
-    print(f"   Total pages: {total_pages}")
-    print(f"   Published: {published_count}")
+    print(f"   Total pages: {stats['total']}")
+    print(f"   🆕 Created: {stats['created']}")
+    print(f"   🔄 Updated: {stats['updated']}")
+    print(f"   ⏭️  Skipped: {stats['skipped']}")
+    print(f"   🔄 Status auto-updated: {stats['status_updated']}")
     print(f"{'='*60}")
