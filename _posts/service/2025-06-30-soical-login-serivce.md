@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "OAuth2 로그인 구현 [Kakao]"
-categories: [API, Social-login]
+categories: [service]
 tags: [Blog, Oauth2, Social-login, Kakao]
 author: "Hyomyeong"
 ---
