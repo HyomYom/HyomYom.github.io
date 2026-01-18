@@ -319,9 +319,10 @@ def create_jekyll_post(page, update_mode=False):
             front_matter_lines.append(f"last_modified_at: {datetime.now().strftime('%Y-%m-%d')}")
         
         front_matter_lines.append("---")
+        front_matter = '\n'.join(front_matter_lines)
         
-        # Front Matter와 본문 사이에 빈 줄 2개 확실히 넣기
-        full_content = '\n'.join(front_matter_lines) + '\n\n' + content
+        # ✨ 중요: Front Matter 끝에 빈 줄 3개 추가 (Jekyll 파싱 확실하게)
+        full_content = front_matter + '\n\n\n' + content
         
         # 파일명 생성
         safe_title = title.lower().replace(' ', '-').replace('/', '-')
