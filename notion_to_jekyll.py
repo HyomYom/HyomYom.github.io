@@ -322,7 +322,7 @@ def create_jekyll_post(page, update_mode=False):
         front_matter = '\n'.join(front_matter_lines)
         
         # ✨ 중요: Front Matter 끝에 빈 줄 3개 추가 (Jekyll 파싱 확실하게)
-        full_content = front_matter + '\n\n\n' + content
+        full_content = front_matter + '\n\n\n\n' + content
         
         # 파일명 생성
         safe_title = title.lower().replace(' ', '-').replace('/', '-')
