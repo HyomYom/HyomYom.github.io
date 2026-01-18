@@ -18,19 +18,16 @@ def get_pages(database_id):
     """특정 데이터베이스에서 페이지 가져오기"""
     url = f"https://api.notion.com/v1/databases/{database_id}/query"
     
-    # Published가 "Published" 상태인 것만 필터링
-    payload = {
-        "filter": {
-            "property": "Published",
-            "select": {
-                "equals": "Published"
-            }
-        }
-    }
+    # ⚠️ 테스트용: 필터 제거 - 모든 페이지 가져오기
+    payload = {}
     
     try:
         response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
+        print(f"📡 Response Status: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"❌ Response: {response.text}")
+            response.raise_for_status()
         
         data = response.json()
         
@@ -122,19 +119,16 @@ def notion_block_to_markdown(block):
 
 def get_title_from_properties(properties):
     """Title 또는 Name 속성에서 제목 추출"""
-    # Title 속성 먼저 확인
     if 'Title' in properties:
         title_prop = properties['Title'].get('title', [])
         if title_prop:
             return title_prop[0]['plain_text']
     
-    # Name 속성 확인
     if 'Name' in properties:
         name_prop = properties['Name'].get('title', [])
         if name_prop:
             return name_prop[0]['plain_text']
     
-    # 둘 다 없으면 모든 title 타입 속성 검색
     for prop_name, prop_data in properties.items():
         if prop_data.get('type') == 'title':
             title_list = prop_data.get('title', [])
@@ -143,12 +137,41 @@ def get_title_from_properties(properties):
     
     return 'Untitled'
 
+def should_publish(properties):
+    """페이지를 발행해야 하는지 확인"""
+    # Published 속성 확인
+    published_prop = properties.get('Published', {})
+    
+    # Select 타입
+    if 'select' in published_prop:
+        status = published_prop['select']
+        if status and status.get('name') == 'Published':
+            return True
+    
+    # Checkbox 타입
+    if 'checkbox' in published_prop:
+        if published_prop['checkbox']:
+            return True
+    
+    # Status 타입
+    if 'status' in published_prop:
+        status = published_prop['status']
+        if status and status.get('name') == 'Published':
+            return True
+    
+    return False
+
 def create_jekyll_post(page):
     """Notion 페이지를 Jekyll 포스트로 변환"""
     try:
         properties = page['properties']
         
-        # Title 또는 Name에서 제목 가져오기
+        # Published 체크
+        if not should_publish(properties):
+            title = get_title_from_properties(properties)
+            print(f"⏭️  Skipped (not published): {title}")
+            return None
+        
         title = get_title_from_properties(properties)
         
         # Date
@@ -219,8 +242,8 @@ if __name__ == '__main__':
         os.makedirs(POSTS_DIR)
     
     total_pages = 0
+    published_count = 0
     
-    # 각 데이터베이스에서 페이지 가져오기
     for idx, database_id in enumerate(DATABASE_IDS, 1):
         print(f"\n{'='*60}")
         print(f"📚 Database {idx}/{len(DATABASE_IDS)}: {database_id[:8]}...{database_id[-4:]}")
@@ -229,15 +252,19 @@ if __name__ == '__main__':
         pages = get_pages(database_id)
         
         if not pages:
-            print(f"⚠️  No published pages found in this database")
+            print(f"⚠️  No pages found in this database")
             continue
         
-        print(f"📝 Found {len(pages)} published pages")
+        print(f"📝 Found {len(pages)} total pages")
         total_pages += len(pages)
         
         for page in pages:
-            create_jekyll_post(page)
+            result = create_jekyll_post(page)
+            if result:
+                published_count += 1
     
     print(f"\n{'='*60}")
-    print(f"✨ Sync completed! Total: {total_pages} pages processed")
+    print(f"✨ Sync completed!")
+    print(f"   Total pages: {total_pages}")
+    print(f"   Published: {published_count}")
     print(f"{'='*60}")
