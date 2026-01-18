@@ -8,6 +8,7 @@ last_modified_at: 2026-01-18
 ---
 
 
+
 # ✍️ Commit Message 정리
 
 > Commit message는 “이 커밋이 무엇을 하는지”를 명령문으로 설명하는 문장이다.
