@@ -1,0 +1,27 @@
+# .github/workflows/notion-debug.yml
+name: Debug Notion Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install requests
+      run: pip install requests
+    
+    - name: Run debug script
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        DATABASE_IDS: ${{ secrets.DATABASE_IDS }}
+      run: python notion_debug.py
