@@ -1,13 +1,18 @@
 ---
 layout: post
-title: "🧾 Git Commit Convention"
+title: "Git Commit Convention"
 date: 2026-01-17
 categories: [git]
 tags: ['Convention']
-last_modified_at: 2026-01-18
+last_modified_at: 2026-01-19
 ---
 
 
+
+해당글은 공부 목적으로 정리한 개인적인 기록입니다. 정확하지 않은 정보가 포함될 수 있으며, 최신 기술 동향이나 공식 문서와는 차이가 있을 수 있습니다! 처음 구현하시는 분들께 작은 도움이 되었으면 하며, 혹시 틀리 내용이 있다면 댓글로 알려주시면 감사하겠습니다.
+
+
+---
 
 # ✍️ Commit Message 정
 
