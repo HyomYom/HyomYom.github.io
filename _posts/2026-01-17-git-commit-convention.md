@@ -4,7 +4,7 @@ title: "Git Commit Convention"
 date: 2026-01-17
 categories: [git]
 tags: ['Convention']
-last_modified_at: 2026-01-19
+last_modified_at: 2026-01-20
 ---
 
 
