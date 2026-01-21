@@ -1,189 +1,184 @@
 ---
 layout: post
-title: "🧾 Git Commit Convention"
+title: "Git Commit Convention"
 date: 2026-01-17
 categories: [git]
 tags: ['Convention']
-last_modified_at: 2026-01-18
+last_modified_at: 2026-01-21
 ---
 
 
 
-# ✍️ Commit Message 정리
+해당글은 공부 목적으로 정리한 개인적인 기록입니다. 정확하지 않은 정보가 포함될 수 있으며, 최신 기술 동향이나 공식 문서와는 차이가 있을 수 있습니다! 처음 구현하시는 분들께 작은 도움이 되었으면 하며, 혹시 틀리 내용이 있다면 댓글로 알려주시면 감사하겠습니다.
+
+
+---
+
+# ✍️ Commit Message 정
 
 > Commit message는 “이 커밋이 무엇을 하는지”를 명령문으로 설명하는 문장이다.
 
 
 ---
 
-## 1️⃣ 기본 형식 (⭐ 가장 중요)
+## 1) 기본 형식
 
 ```text
-<type>(optional scope):<subject>
+<type>[optional scope]: <subject>
 
-✅ 예시
-feat(auth):add JWT authentication
-fix(user): resolvenull pointerexception
+[optional body]
+
+[optional footer]
 
 
 ```
-
-> 이 형식만 잘 지켜도 커밋 메시지는 절반은 성공이다.
-
-
----
-
-## 2️⃣ Type 종류 (필수)
-
-Type은 이 커밋이 어떤 성격인지를 나타낸다.
-
-> 👉 실무에서는 feat / fix가 가장 많이 쓰인다.
-
-
----
-
-## 3️⃣ Scope (선택)
-
-Scope는 어디를 수정했는지를 보여준다.
-
-- 도메인 / 모듈 / 패키지 단위
-- 보통 소문자 + 한 단어로 작성
-### 예시
-
-```text
-feat(auth)
-fix(security)
-refactor(user)
-
-
-```
-
-> 필수는 아니지만, 있으면 커밋 히스토리 보기가 훨씬 좋다.
-
-
----
-
-## 4️⃣ Subject (필수)
-
-### ✨ 작성 규칙
-
-- 명령문으로 작성
-- 첫 글자 소문자
-- 마침표 ❌
-- 50자 이내
-### ✅ 좋은 예
-
-```text
-feat: add login API
-fix: handle expired token
-
-
-```
-
-### ❌ 나쁜 예
-
-```text
-Added login feature ❌
-Fixing bug ❌
-로그인 기능 추가 ❌
-
-```
-
-> ❗ 한국어 ❌ / 과거형 ❌
-
-
----
-
-## 5️⃣ Body (선택)
-
-Subject에서 다 설명이 안 될 때 사용한다.
-
-- 왜(Why) 이 작업을 했는지
-- 어떻게(How) 구현했는지
-Subject 아래 한 줄 띄우고 작성한다.
 
 ### 예시
 
 ```text
+feat(auth): add JWT authentication
+fix(jwt): handle expired token
+chore(ci): update build workflow
+
+
+```
+
+
+---
+
+## 2) Type 목록 (가장 자주 쓰는 것)
+
+- feat: 새로운 기능 추가
+- fix: 버그 수정
+- docs: 문서 변경(README, 주석 등)
+- style: 포맷/스타일 변경(동작 변화 없음)
+- refactor: 리팩토링(동작 변화 없음)
+- test: 테스트 추가/수정
+- chore: 빌드/설정/패키지/잡일(코드 동작 변화 없음)
+
+---
+
+## 3) Scope (선택)
+
+어떤 영역을 수정했는지 표시한다.
+
+형식:
+
+```text
+type(scope): subject
+
+
+```
+
+예시:
+
+```text
+feat(auth):addrefresh token rotation
+fix(user): prevent duplicate email signup
+refactor(security): simplify authfilter
+
+
+```
+
+
+---
+
+## 4) Subject 규칙
+
+- 명령문(동사 원형)으로 작성: add / fix / remove / update / refactor
+- 소문자 시작
+- 마침표 금지
+- 짧게(권장 50자 이내)
+좋은 예:
+
+```text
+feat:addlogin API
+fix: preventnull pointerin tokenparser
+
+
+```
+
+나쁜 예:
+
+```text
+Added login feature
+Fixing bug
+로그인 기능 추가
+
+
+```
+
+
+---
+
+## 5) Body (선택)
+
+Subject에서 설명이 부족할 때만 작성한다.
+
+권장 구성:
+
+- 무엇을 변경했는지
+- 왜 변경했는지(필요 시)
+예시:
+
+```text
 feat(auth):add JWT authentication
 
-- issue tokenonlogin
--validate tokenon request
-- handle expiration
+- issueaccess tokenonlogin
+-validate tokenoneach request
+-return401on expiration
 
-```
-
-> 팀원이 커밋만 봐도 흐름을 이해할 수 있게 쓰는 게 목표
-
-
----
-
-## 6️⃣ Footer (선택)
-
-이슈나 PR과 연결할 때 사용한다.
-
-```text
-Closes#23
 
 ```
 
 
 ---
 
-## 7️⃣ 실무에서 자주 쓰는 예시
+## 6) Footer (선택)
 
-### 🔐 Security / Auth 관련
+이슈/PR 연결, 브레이킹 체인지 명시 등에 사용한다.
+
+### 이슈 닫기
 
 ```text
-feat(security):addrole-basedauthorization
+Closes#123
 
-- apply ROLE_USERand ROLE_ADMIN
--restrictadmin endpoints
 
 ```
 
-```text
-fix(jwt): handle expired token exception
-
-```
+### Breaking Change
 
 ```text
-refactor(auth): simplify authentication filter
+feat(api): change token response schema
 
-```
+BREAKING CHANGE: token response now wraps data in `result`.
 
-
----
-
-## 8️⃣ 커밋 메시지 한 줄 요약 규칙
-
-> 💡 Commit message = 명령문
-
-- ❌ 무엇을 했다
-- ✅ 무엇을 하라
-```text
-add login API
-fix token validation
-remove unused config
-
-```
-
-> 커밋 메시지를 보면
-
-
----
-
-## 9️⃣ Spring + Security + JWT 프로젝트에서 자주 쓰는 Scope
-
-```text
-feat(auth)
-feat(security)
-fix(jwt)
-refactor(user)
-chore(config)
 
 ```
 
 
 ---
+
+## 7) 실무에서 바로 쓰는 템플릿
+
+### 기본
+
+```text
+type(scope): subject
+
+
+```
+
+### 변경 이유까지
+
+```text
+type(scope): subject
+
+- change 1
+- change 2
+
+Closes#issue
+
+
+```
 
