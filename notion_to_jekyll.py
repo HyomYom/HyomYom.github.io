@@ -316,7 +316,15 @@ def create_jekyll_post(page, update_mode=False):
         # 파일명
         safe_title = slugify_title(title)
         filename = f"{date_str}-{safe_title}.md"
-        filepath = os.path.join(POSTS_DIR, filename)
+
+        # ✅ 카테고리 폴더가 _posts 하위에 "이미 존재하면" 그 폴더에 저장
+        target_dir = POSTS_DIR
+        if category:
+            category_dir = os.path.join(POSTS_DIR, category)
+            if os.path.isdir(category_dir):
+                target_dir = category_dir
+
+        filepath = os.path.join(target_dir, filename)
 
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(full_content)
