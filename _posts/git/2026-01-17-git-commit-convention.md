@@ -4,7 +4,7 @@ title: "Git Commit Convention"
 date: 2026-01-17
 categories: [git]
 tags: ['Convention']
-last_modified_at: 2026-01-21
+last_modified_at: 2026-01-22
 ---
 
 
@@ -14,7 +14,7 @@ last_modified_at: 2026-01-21
 
 ---
 
-# ✍️ Commit Message 정
+# ✍️ Commit Message 정의
 
 > Commit message는 “이 커밋이 무엇을 하는지”를 명령문으로 설명하는 문장이다.
 
