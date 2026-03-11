@@ -2,46 +2,45 @@ name: Sync Notion to Jekyll
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 6시간마다 실행
-  workflow_dispatch:  # 수동 실행 가능
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: master
-        persist-credentials: false
-        fetch-depth: 0
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    
-    - name: Install dependencies
-      run: |
-        pip install requests
-    
-    - name: Run sync script
-      env:
-        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-        DATABASE_IDS: ${{ secrets.DATABASE_IDS }}
-      run: |
-        python notion_to_jekyll.py
-    
-    - name: Commit and push if changed
-      run: |
-        git config --global user.email "github-actions@github.com"
-        git config --global user.name "GitHub Actions"
-        git add _posts/
-        if ! git diff --cached --quiet; then
-          git commit -m "chore: sync posts from Notion"
-    
-          # ✅ PAT로 인증해서 push (이게 핵심)
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
-          git push origin HEAD:master
-        fi
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run sync script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          DATABASE_IDS: ${{ secrets.DATABASE_IDS }}
+        run: |
+          python notion_to_jekyll.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add _posts/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: sync posts from Notion"
+            git push origin HEAD:master
+          fi
