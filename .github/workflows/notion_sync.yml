@@ -13,14 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 여기서부터 GH_PAT를 사용하도록 token 속성을 추가합니다.
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: master
           fetch-depth: 0
+          token: ${{ secrets.GH_PAT }} # 🌟 핵심: 체크아웃부터 PAT 사용
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -40,10 +42,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add _posts/
+          
           if ! git diff --cached --quiet; then
             git commit -m "chore: sync posts from Notion"
-
-            # ✅ PAT로 인증해서 push (이게 핵심)
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
-            git push origin HEAD:master
+            # 2. 이미 Checkout 단계에서 인증되었으므로, 복잡한 URL 설정 없이 바로 push 가능합니다.
+            git push origin master 
           fi
