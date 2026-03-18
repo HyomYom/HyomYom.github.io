@@ -4,6 +4,7 @@ title: " class vs record"
 date: 2026-01-23
 categories: [java]
 tags: ['class', 'record']
+last_modified_at: 2026-03-18
 ---
 
 
@@ -13,16 +14,16 @@ tags: ['class', 'record']
 ## class
 
 ```java
-publicclassUser {
+public class User. {
 private String name;
 privateint age;
 
-publicUser(String name, int age) {
+public User(String name, int age) {
 this.name = name;
 this.age = age;
     }
 
-public StringgetName() {return name; }
+public String getName() {return name; }
 }
 
 
@@ -46,7 +47,7 @@ public StringgetName() {return name; }
 ## record
 
 ```java
-publicrecordUser(String name, int age) {}
+public record User(String name, int age) {}
 
 
 ```
@@ -77,7 +78,7 @@ publicrecordUser(String name, int age) {}
 
 ```java
 @Value
-publicclassUser {
+public class User {
     String name;
 int age;
 }
@@ -98,7 +99,7 @@ int age;
 ## record
 
 ```java
-publicrecordUser(String name, int age) {}
+public record User(String name, int age) {}
 
 
 ```
@@ -125,7 +126,7 @@ publicrecordUser(String name, int age) {}
 - setter 없음
 ```java
 @Entity
-publicrecordUser(...) {}// ❌ 불가
+public record User(...) {}// ❌ 불가
 
 
 ```
@@ -140,7 +141,7 @@ publicrecordUser(...) {}// ❌ 불가
 ## Java 16+ (추천)
 
 ```java
-publicrecordUserResponse(String name, int age) {}
+public record UserResponse(String name, int age) {}
 
 
 ```
@@ -148,17 +149,17 @@ publicrecordUserResponse(String name, int age) {}
 ## Java 8~15
 
 ```java
-publicclassUserResponse {
+public class UserResponse {
 privatefinal String name;
 privatefinalint age;
 
-publicUserResponse(String name, int age) {
+public UserResponse(String name, int age) {
 this.name = name;
 this.age = age;
     }
 
-public StringgetName() {return name; }
-publicintgetAge() {return age; }
+public String getName() {return name; }
+public int getAge() {return age; }
 }
 
 
@@ -187,7 +188,7 @@ publicintgetAge() {return age; }
 ### ⭕ class (추천)
 
 ```java
-publicclassUserPrincipalimplementsUserDetails {
+public class UserPrincipalimplementsUserDetails {
 privatefinal Long id;
 privatefinal String username;
 privatefinal Collection<?extendsGrantedAuthority> authorities;
