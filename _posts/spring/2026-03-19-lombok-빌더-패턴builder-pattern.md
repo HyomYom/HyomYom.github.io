@@ -80,7 +80,7 @@ Builder 안에 임시로 값 저장하는 거야.
 
 ---
 
-### 3. .build() 호출
+### 3) build() 호출
 
 ```java
 Product product = builder.build();
@@ -91,7 +91,7 @@ Product product = builder.build();
 
 ---
 
-## 4. build() 호출
+## 4) build() 호출
 
 ```java
 return new Product(this);
@@ -100,7 +100,7 @@ return new Product(this);
 
 ---
 
-### 5. Product 생성자에서 값 복사
+### 5) Product 생성자에서 값 복사
 
 ```java
 private Product(Builder builder) {
