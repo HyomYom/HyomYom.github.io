@@ -4,6 +4,7 @@ title: "[Lombok] 빌더 패턴(Builder Pattern)"
 date: 2026-03-19
 categories: [spring]
 tags: ['lombok', 'builder']
+last_modified_at: 2026-03-19
 ---
 
 
@@ -32,13 +33,13 @@ tags: ['lombok', 'builder']
 ```java
 
 public class Product {
-    private final String name;
-    private final double price;
+    private final String name;
+    private final double price;
 
-    // 생성자는 private으로 하여 외부에서 직접 생성을 막음
-    private Product(Builder builder) {
-        this.name = builder.name;
-        this.price = builder.price;
+    // 생성자는 private으로 하여 외부에서 직접 생성을 막음
+    private Product(Builder builder) {
+        this.name = builder.name;
+        this.price = builder.price;
     }
 
     // 정적 내부 빌더 클래스
@@ -56,7 +57,7 @@ public class Product {
 }
 ```
 
-### 1. Builder 생성
+### 1) Builder 생성
 
 ```java
 Product.Builder builder = new Product.Builder();
@@ -65,9 +66,9 @@ Product.Builder builder = new Product.Builder();
 
 ---
 
-### 2.Builder 세팅
+### 2) Builder 세팅
 
-```text
+```java
 builder.name("콜라");
 builder.price(2000);
 ```
