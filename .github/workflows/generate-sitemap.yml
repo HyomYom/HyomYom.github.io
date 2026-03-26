@@ -25,7 +25,9 @@ jobs:
         include-html: true  # Set to true to include HTML files
         include-pdf: false  # Set to false to exclude PDFs
         additional-extensions: doc docx  # Add any additional desired file extensions
-        exclude-paths: ./*, !/_posts/**  # Exclude everything except '_posts'
+        exclude-paths: >
+          /*
+          !/_posts/**
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
