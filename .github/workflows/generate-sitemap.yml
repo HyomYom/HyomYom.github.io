@@ -3,6 +3,7 @@ name: Generate xml sitemap
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:  # Allow manual execution of the workflow
 
 jobs:
   sitemap_job:
