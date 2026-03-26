@@ -26,8 +26,16 @@ jobs:
         include-pdf: false  # Set to false to exclude PDFs
         additional-extensions: md  # Add any additional desired file extensions
         exclude-paths: >
-          /*
-          !/_posts/**
+          /_data
+          /_includes
+          /_javascript
+          /_layouts
+          /_plugins
+          /_sass
+          /_tabs
+          /assets
+          /docs
+          /tools
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
