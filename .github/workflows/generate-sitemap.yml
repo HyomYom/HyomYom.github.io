@@ -24,7 +24,7 @@ jobs:
         sitemap-format: xml
         include-html: true  # Set to true to include HTML files
         include-pdf: false  # Set to false to exclude PDFs
-        additional-extensions: doc docx  # Add any additional desired file extensions
+        additional-extensions: md  # Add any additional desired file extensions
         exclude-paths: >
           /*
           !/_posts/**
