@@ -1,75 +1,35 @@
+---
+layout: null
+sitemap:
+  changefreq: daily
+  priority : 0.5
+---
+
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://hyomyom.github.io/</loc>
-<lastmod>2021-01-26T20:24:47+08:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/README.md</loc>
-<lastmod>2024-08-27T15:18:52+08:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/google4376c3e7c45b4937.html</loc>
-<lastmod>2026-03-17T09:39:26+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/docker/2025-08-08-Oauth2-service-docker-deployment.md</loc>
-<lastmod>2026-01-17T14:48:04+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/git/2026-01-17-git-commit-convention.md</loc>
-<lastmod>2026-01-22T18:30:33Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/git/2026-01-19-git-log-옵션-사용-패턴.md</loc>
-<lastmod>2026-03-11T17:29:47Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/java/2025-01-20-첫-게시글.md</loc>
-<lastmod>2026-01-19T01:01:44+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/java/2026-01-23-class-vs-record.md</loc>
-<lastmod>2026-03-18T07:00:01Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/java/2026-01-23-flyway-마이그레이션-오류.md</loc>
-<lastmod>2026-03-18T18:57:20Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/mac/2026-03-09-macos-java-환경변수-설정.md</loc>
-<lastmod>2026-03-13T00:45:38+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/reboot/2026-03-14-1주차-spring-msa-학습.md</loc>
-<lastmod>2026-03-19T00:01:18+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/service/2025-06-30-soical-login-serivce.md</loc>
-<lastmod>2026-01-19T01:01:44+09:00</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-12-왜-스프링일까.md</loc>
-<lastmod>2026-03-14T09:37:50Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-17-spring-ioc-di-그리고-spring-bean-핵심-원리-이해.md</loc>
-<lastmod>2026-03-16T18:59:13Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-19-jpa-one-to-many-양방향-매핑과-객체-상태-불일치.md</loc>
-<lastmod>2026-03-19T00:10:19Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-19-jpa.md</loc>
-<lastmod>2026-03-19T13:01:24Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-19-lombok-보일러플레이트-방지.md</loc>
-<lastmod>2026-03-18T18:57:20Z</lastmod>
-</url>
-<url>
-<loc>https://hyomyom.github.io/_posts/spring/2026-03-19-lombok-빌더-패턴builder-pattern.md</loc>
-<lastmod>2026-03-19T13:01:24Z</lastmod>
-</url>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+        xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {% for post in site.posts %}
+    <url>
+        <loc>{{ site.url }}{{ post.url }}</loc>
+        {% if post.lastmod == null %}
+        <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
+        {% else %}
+        <lastmod>{{ post.lastmod | date_to_xmlschema }}</lastmod>
+        {% endif %}
+
+        {% if post.sitemap.changefreq == null %}
+        <changefreq>weekly</changefreq>
+        {% else %}
+        <changefreq>{{ post.sitemap.changefreq }}</changefreq>
+        {% endif %}
+
+        {% if post.sitemap.priority == null %}
+        <priority>0.5</priority>
+        {% else %}
+        <priority>{{ post.sitemap.priority }}</priority>
+        {% endif %}
+
+    </url>
+    {% endfor %}
 </urlset>
