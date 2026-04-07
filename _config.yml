@@ -225,5 +225,7 @@ jekyll-archives:
     category: /categories/:name/
 
 # Plugin settings
-plugins:
-  - jekyll-sitemap
+plugins: [jekyll-paginate, jekyll-feed, jekyll-gist]
+
+feed:
+  path: feed.xml
