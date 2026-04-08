@@ -13,6 +13,8 @@ last_modified_at: 2026-04-08
 
 - 개념: 기존 PostgreSQL RDBMS의 트랜잭션(ACID) 안정성을 유지하면서 고차원 벡터 데이터 저장 및 유사도 검색을 지원하는 확장 도구이다.
 - 테이블 및 인덱스 설계: 원본 문서와 쪼개진 벡터(Chunk) 데이터를 분리하여 저장하고, 고속 검색을 위해 HNSW 인덱스를 사용한다.
+
+
 ```sql
 -- 확장 기능 활성화
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -32,6 +34,8 @@ CREATE INDEX idx_vector_store_metadata ON vector_store USING gin (metadata);
 ```
 
 - 문서 분할 (Chunking) 및 저장: LLM의 컨텍스트 한계를 넘지 않기 위해 긴 문서를 TokenTextSplitter로 분할(오버랩 적용)하여 벡터화한다.
+
+
 ```sql
 // TokenTextSplitter: (청크당 토큰, 오버랩, 최소 토큰, 최대 조각 수, 구분자 유지)
 TextSplitter splitter = new TokenTextSplitter(500, 100, 5, 10000, true);
@@ -55,7 +59,9 @@ vectorStore.add(splitChunks);
 ## 2. RAG (검색 증강 생성) 구현
 
 - 개념: 사용자의 질문을 벡터로 변환하여 Vector DB에서 가장 유사한 문서 조각(Top-K)을 찾아낸 뒤, 이를 LLM의 프롬프트에 주입하여 환각(Hallucination) 없는 정확한 답변을 생성하는 패턴이다.
-```sql
+
+
+```java
 private static final String RAG_PROMPT_TEMPLATE = """
     다음 문서들을 참고하여 질문에 답변해주세요.
     문서에 없는 내용은 답변하지 마세요.
@@ -105,7 +111,9 @@ public AnswerResponse ask(String question) {
 
 - 개념: ChatClient의 요청(Before)과 응답(After)을 가로채어 공통 로직(대화 저장, 보안 필터링 등)을 분리하는 미들웨어 패턴이다.
 - ChatMemoryAdvisor (대화 기억 유지): 사용자의 이전 질문과 AI의 답변을 ConcurrentHashMap이나 DB에 저장했다가, 다음 질문 시 프롬프트에 함께 묶어 전달한다.
-```sql
+
+
+```java
 @Bean
 public ChatClient chatClient(ChatClient.Builder builder) {
     // 세션 ID "user-123"의 최근 10개 대화 기억 유지
@@ -124,7 +132,9 @@ public ChatClient chatClient(ChatClient.Builder builder) {
 ## 4. Function Calling (함수 호출)
 
 - 개념: LLM이 스스로 판단하여 날씨 API, 사내 DB, 계산기 등 외부 도구(Tool)를 호출할 수 있게 만드는 기술이다. 자연어에서 파라미터를 정확히 추출해 낸다.
-```sql
+
+
+```java
 // 1. 도구 정의 (AI가 읽고 판단할 수 있도록 설명 상세 작성)
 @Service
 public class FunctionTools {
@@ -157,7 +167,9 @@ public String chat(String userMessage) {
 
 - 개념: 단순 질의응답을 넘어 AI가 목표를 달성하기 위해 생각(Thought) -> 행동(Act) -> 관찰(Observation) 과정을 스스로 반복하는 고도화된 아키텍처이다.
 - Plan-and-Execute (계획 후 실행) 패턴: 즉시 행동하지 않고 전체 로드맵을 먼저 설계하여 정확도를 높인다.
-```sql
+
+
+```java
 public String planAndExecute(String goal) {
     // 1. 계획 수립 (Planner)
     String plan = chatClient.prompt()
