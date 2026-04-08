@@ -4,16 +4,12 @@ title: "2주차 Spring MSA 학습 - RESTful API 설계와 스프링 프레임워
 date: 2026-03-14
 categories: [reboot]
 tags: ['1주차', 'RESTful', 'spring', 'framework']
+last_modified_at: 2026-04-08
 ---
 
 
 
-요청하신 모든 심화 개념까지 포함하여, 흐름이 끊기지 않고 한눈에 들어오도록 통합된 최종 정리본을 작성했습니다. 노션에 바로 복사해서 붙여넣으시면 완벽한 마스터 노트가 될 것입니다!
-
-
----
-
-# 1. Spring Core & 웹 아키텍처
+## 1. Spring Core & 웹 아키텍처
 
 ### ⚙️ 핵심 개념
 
