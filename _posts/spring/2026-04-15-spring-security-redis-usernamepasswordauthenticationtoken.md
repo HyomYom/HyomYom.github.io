@@ -4,259 +4,42 @@ title: "[Spring Security & Redis] UsernamePasswordAuthenticationToken"
 date: 2026-04-15
 categories: [spring]
 tags: ['spring_security', 'spring', 'redis', 'UserNamePasswordAuthenticationToken']
+last_modified_at: 2026-04-22
 ---
 
 
 
-## UsernamePasswordAuthenticationToken
+## Spring Security : UsernamePasswordAuthenticationToken 구조와 동작 원리
 
-Spring Security에서 인증 처리에 사용하는 대표적인 Authentication 구현체이다.
-
-핵심은 같은 클래스를 로그인 요청 객체로도 사용하고, 인증 완료 객체로도 사용한다는 점이다.
-
-또한 생성자 인자 개수(2개 / 3개)에 따라 역할이 달라진다.
+UsernamePasswordAuthenticationToken은 Spring Security에서 인증(Authentication) 처리를 위해 사용되는 대표적인 구현체이다. 이 객체의 핵심은 인증 요청 객체와 인증 완료 객체라는 두 가지 역할을 하나의 클래스가 모두 수행한다는 점이며, 생성자에 전달되는 인자(Argument)의 개수에 따라 객체의 상태와 역할이 명확히 구분된다.
 
 
 ---
 
-# 1. Authentication 객체의 핵심 구성요소
+### 인증 객체의 핵심 구성 요소
 
-Spring Security의 인증 객체는 크게 3가지 정보를 가진다.
+Spring Security의 인증 객체는 인증과 인가를 처리하기 위해 세 가지 주요 데이터를 관리한다. 다양한 인증 방식(일반 폼 로그인, OTP, OAuth 등)을 유연하게 수용하기 위해 principal과 credentials는 Object 타입으로 설계되어 있다.
 
+- Principal (주체)
+- Credentials (증명 정보)
+- Authorities (권한 목록)
+### 생성자 시그니처에 따른 역할 구분
 
----
+동일한 클래스지만 생성 시 주입하는 인자의 개수에 따라 토큰의 내부 상태(authenticated)와 사용 목적이 달라진다.
 
-## principal 이란?
+- 인증 요청 객체 (2-Argument Constructor)
 
-로그인하려는 사용자를 식별하는 값이다.
 
-예:
+- 인증 완료 객체 (3-Argument Constructor)
+### 전체 인증 처리 흐름
 
-- username
-- email
-- loginId
-- 인증 완료 후 UserDetails 객체
-```java
-principal = "user@test.com"
-```
+실제 애플리케이션에서 UsernamePasswordAuthenticationToken이 상태 변화를 겪으며 처리되는 과정은 다음과 같다.
 
-
----
-
-## credentials 란?
-
-사용자가 진짜 본인인지 증명하는 값이다.
-
-대표적으로:
-
-- password
-- OTP 번호
-- JWT 토큰
-- 인증서
-로그인에서는 보통 비밀번호가 들어간다.
-
-```java
-credentials = "1234"
-```
-
-즉:
-
-> principal 은 누구인지
-
-
----
-
-## authorities 란?
-
-인증된 사용자의 권한 정보이다.
-
-예:
-
-```java
-ROLE_USER
-ROLE_ADMIN
-```
-
-
----
-
-# 2. 왜 principal / credentials 가 Object 타입일까?
-
-Spring Security는 다양한 인증 방식을 지원해야 한다.
-
-예:
-
-- 일반 로그인 → email + password
-- OTP 로그인 → phone + code
-- JWT 로그인 → user + token
-- OAuth 로그인 → social user info
-그래서 타입을 고정하지 않고:
-
-```java
-Object principal
-Object credentials
-```
-
-로 설계되었다.
-
-
----
-
-# 3. 생성자 2개짜리 vs 3개짜리 차이
-
-
----
-
-## 2-argument 생성자 → 인증 요청용
-
-```java
-new UsernamePasswordAuthenticationToken(
-    principal,
-    credentials
-)
-```
-
-예:
-
-```java
-new UsernamePasswordAuthenticationToken(
-    email,
-    password
-)
-```
-
-내부 상태:
-
-```java
-authenticated = false
-```
-
-의미:
-
-> 아직 인증되지 않은 상태
-
-
----
-
-## 3-argument 생성자 → 인증 완료용
-
-```java
-new UsernamePasswordAuthenticationToken(
-    principal,
-    credentials,
-    authorities
-)
-```
-
-예:
-
-```java
-new UsernamePasswordAuthenticationToken(
-    userDetails,
-    null,
-    authorities
-)
-```
-
-내부 상태:
-
-```java
-authenticated = true
-```
-
-의미:
-
-> 인증 완료 상태
-
-
----
-
-# 4. email / password 넣는 게 맞는가?
-
-많이 헷갈리는 부분이다.
-
-```java
-new UsernamePasswordAuthenticationToken(
-    email,
-    password
-)
-```
-
-이렇게 작성하는 것은 정상적인 표준 방식이다.
-
-여기서:
-
-즉:
-
-> 나는 user@test.com 이고
-
-라는 요청 객체이다.
-
-
----
-
-# 5. credentials 에 password 넣는 게 왜 중요한가?
-
-절대 무의미하지 않다.
-
-로그인 인증의 핵심 데이터이다.
-
-Spring Security 내부에서 비밀번호 비교에 사용된다.
-
-```java
-String inputPassword =
-    authentication.getCredentials().toString();
-
-String dbPassword =
-    userDetails.getPassword();
-
-passwordEncoder.matches(
-    inputPassword,
-    dbPassword
-);
-```
-
-즉:
-
-- 사용자가 입력한 비밀번호
-- DB에 저장된 암호화 비밀번호
-를 비교해서 로그인 성공 여부를 판단한다.
-
-
----
-
-# 6. 로그인 성공 후 credentials 가 null 인 이유
-
-인증 완료 후에는 비밀번호를 계속 들고 있을 필요가 없다.
-
-그래서 보통:
-
-```java
-new UsernamePasswordAuthenticationToken(
-    userDetails,
-    null,
-    authorities
-)
-```
-
-이렇게 만든다.
-
-이유:
-
-- 인증 이미 끝남
-- 비밀번호 메모리 보관 위험
-- 보안상 제거하는 것이 안전함
-
----
-
-# 7. 전체 로그인 흐름
-
-## [1단계] 로그인 요청
-
-사용자가 이메일 / 비밀번호 입력
-
-```java
-email = "user@test.com"
-password = "1234"
-```
+- 로그인 데이터 인입: 클라이언트가 식별자(email)와 증명 정보(password)를 서버로 전송한다.
+- 요청 토큰 생성: 전송된 데이터를 기반으로 미인증 상태의 2-Argument Token을 생성한다.
+- 토큰 검증: AuthenticationManager가 요청 토큰을 전달받아 내부 UserDetailsService를 호출해 DB 정보를 조회하고, 입력된 평문 비밀번호와 저장된 암호화 비밀번호를 대조한다.
+- 완료 토큰 생성: 검증에 성공하면 UserDetails 객체와 추출된 권한 정보를 바탕으로 인증 완료 상태의 3-Argument Token을 생성한다.
+- 보안 컨텍스트 저장: 최종 생성된 인증 객체를 SecurityContextHolder에 저장하여 애플리케이션 전반에서 로그인 상태를 유지하도록 처리한다.
+- JWT 인증 방식에서의 응용 예시:
+### 상태 비교 요약
 
