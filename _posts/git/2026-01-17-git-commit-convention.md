@@ -3,8 +3,8 @@ layout: post
 title: "Git Commit Convention"
 date: 2026-01-17
 categories: [git]
-tags: ['Convention']
-last_modified_at: 2026-01-22
+tags: ['commit', 'Convention']
+last_modified_at: 2026-04-23
 ---
 
 
@@ -16,7 +16,7 @@ last_modified_at: 2026-01-22
 
 # ✍️ Commit Message 정의
 
-> Commit message는 “이 커밋이 무엇을 하는지”를 명령문으로 설명하는 문장이다.
+> Commit message는 **“이 커밋이 무엇을 하는지”**를 명령문으로 설명하는 문장이다.
 
 
 ---
@@ -48,13 +48,13 @@ chore(ci): update build workflow
 
 ## 2) Type 목록 (가장 자주 쓰는 것)
 
-- feat: 새로운 기능 추가
-- fix: 버그 수정
-- docs: 문서 변경(README, 주석 등)
-- style: 포맷/스타일 변경(동작 변화 없음)
-- refactor: 리팩토링(동작 변화 없음)
-- test: 테스트 추가/수정
-- chore: 빌드/설정/패키지/잡일(코드 동작 변화 없음)
+- **feat**: 새로운 기능 추가
+- **fix**: 버그 수정
+- **docs**: 문서 변경(README, 주석 등)
+- **style**: 포맷/스타일 변경(동작 변화 없음)
+- **refactor**: 리팩토링(동작 변화 없음)
+- **test**: 테스트 추가/수정
+- **chore**: 빌드/설정/패키지/잡일(코드 동작 변화 없음)
 
 ---
 
@@ -85,10 +85,10 @@ refactor(security): simplify authfilter
 
 ## 4) Subject 규칙
 
-- 명령문(동사 원형)으로 작성: add / fix / remove / update / refactor
-- 소문자 시작
-- 마침표 금지
-- 짧게(권장 50자 이내)
+- **명령문**(동사 원형)으로 작성: `add / fix / remove / update / refactor`
+- **소문자 시작**
+- **마침표 금지**
+- **짧게(권장 50자 이내)**
 좋은 예:
 
 ```text
