@@ -102,34 +102,74 @@ def get_blocks(page_id):
         return []
 
 
-def notion_block_to_markdown(block):
+def notion_rich_text_to_markdown(rich_texts):
+    """rich_text 배열을 마크다운 문자열로 변환 (볼드, 코드, 이탤릭 등 포함)"""
+    result = ""
+    for t in rich_texts:
+        text = t.get("plain_text", "")
+        annotations = t.get("annotations", {})
+        if annotations.get("code"):
+            text = f"`{text}`"
+        if annotations.get("bold"):
+            text = f"**{text}**"
+        if annotations.get("italic"):
+            text = f"*{text}*"
+        if annotations.get("strikethrough"):
+            text = f"~~{text}~~"
+        href = t.get("href")
+        if href:
+            text = f"[{text}]({href})"
+        result += text
+    return result
+
+
+def notion_block_to_markdown(block, depth=0):
     """Notion 블록을 마크다운으로 변환"""
     block_type = block.get("type", "")
+    indent = "  " * depth
 
     try:
         if block_type == "paragraph":
-            text = "".join([t["plain_text"] for t in block["paragraph"]["rich_text"]])
-            return text + "\n\n"
+            text = notion_rich_text_to_markdown(block["paragraph"]["rich_text"])
+            if not text.strip():
+                return "\n"
+            prefix = f"{indent}  " if depth > 0 else ""
+            result = f"{prefix}{text}\n\n"
+            if block.get("has_children"):
+                children = get_blocks(block["id"])
+                for child in children:
+                    result += notion_block_to_markdown(child, depth)
+            return result
 
         elif block_type == "heading_1":
-            text = "".join([t["plain_text"] for t in block["heading_1"]["rich_text"]])
+            text = notion_rich_text_to_markdown(block["heading_1"]["rich_text"])
             return f"# {text}\n\n"
 
         elif block_type == "heading_2":
-            text = "".join([t["plain_text"] for t in block["heading_2"]["rich_text"]])
+            text = notion_rich_text_to_markdown(block["heading_2"]["rich_text"])
             return f"## {text}\n\n"
 
         elif block_type == "heading_3":
-            text = "".join([t["plain_text"] for t in block["heading_3"]["rich_text"]])
+            text = notion_rich_text_to_markdown(block["heading_3"]["rich_text"])
             return f"### {text}\n\n"
 
         elif block_type == "bulleted_list_item":
-            text = "".join([t["plain_text"] for t in block["bulleted_list_item"]["rich_text"]])
-            return f"- {text}\n"
+            text = notion_rich_text_to_markdown(block["bulleted_list_item"]["rich_text"])
+            result = f"{indent}- {text}\n"
+            if block.get("has_children"):
+                children = get_blocks(block["id"])
+                for child in children:
+                    result += notion_block_to_markdown(child, depth + 1)
+            return result
 
         elif block_type == "numbered_list_item":
-            text = "".join([t["plain_text"] for t in block["numbered_list_item"]["rich_text"]])
-            return f"1. {text}\n"
+            text = notion_rich_text_to_markdown(block["numbered_list_item"]["rich_text"])
+            result = f"{indent}1. {text}\n"
+            if block.get("has_children"):
+                children = get_blocks(block["id"])
+                for child in children:
+                    result += notion_block_to_markdown(child, depth + 1)
+            return result
 
         elif block_type == "code":
             text = "".join([t["plain_text"] for t in block["code"]["rich_text"]])
@@ -166,7 +206,7 @@ def notion_block_to_markdown(block):
             return f"```{language}\n{text}\n```\n\n"
 
         elif block_type == "quote":
-            text = "".join([t["plain_text"] for t in block["quote"]["rich_text"]])
+            text = notion_rich_text_to_markdown(block["quote"]["rich_text"])
             return f"> {text}\n\n"
 
         elif block_type == "image":
@@ -174,7 +214,7 @@ def notion_block_to_markdown(block):
                 url = block["image"]["external"]["url"]
             else:
                 url = block["image"]["file"]["url"]
-            caption = "".join([t["plain_text"] for t in block["image"].get("caption", [])])
+            caption = notion_rich_text_to_markdown(block["image"].get("caption", []))
             return f"![{caption}]({url})\n\n"
 
         elif block_type == "divider":
@@ -185,13 +225,33 @@ def notion_block_to_markdown(block):
             icon_text = ""
             if icon.get("type") == "emoji":
                 icon_text = icon.get("emoji", "💡")
-
-            text = "".join([t["plain_text"] for t in block["callout"]["rich_text"]])
+            text = notion_rich_text_to_markdown(block["callout"]["rich_text"])
             return f"> {icon_text} {text}\n\n"
 
         elif block_type == "toggle":
-            text = "".join([t["plain_text"] for t in block["toggle"]["rich_text"]])
-            return f"<details>\n<summary>{text}</summary>\n\n</details>\n\n"
+            text = notion_rich_text_to_markdown(block["toggle"]["rich_text"])
+            result = f"<details>\n<summary>{text}</summary>\n\n"
+            if block.get("has_children"):
+                children = get_blocks(block["id"])
+                for child in children:
+                    result += notion_block_to_markdown(child, depth)
+            result += "</details>\n\n"
+            return result
+
+        elif block_type == "table":
+            rows = get_blocks(block["id"])
+            if not rows:
+                return ""
+            md_rows = []
+            for i, row in enumerate(rows):
+                if row.get("type") != "table_row":
+                    continue
+                cells = row["table_row"]["cells"]
+                cell_texts = [notion_rich_text_to_markdown(cell) for cell in cells]
+                md_rows.append("| " + " | ".join(cell_texts) + " |")
+                if i == 0:
+                    md_rows.append("| " + " | ".join(["---"] * len(cell_texts)) + " |")
+            return "\n".join(md_rows) + "\n\n"
 
     except Exception as e:
         print(f"⚠️  Error converting block type '{block_type}': {str(e)}")
